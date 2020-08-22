@@ -8,6 +8,8 @@ namespace MonoGameAndLua
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private ImGuiRenderer _imGuiRenderer;
+        private ModdingHandler _moddingHandler;
 
         public Game1()
         {
@@ -19,6 +21,8 @@ namespace MonoGameAndLua
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _imGuiRenderer = new ImGuiRenderer(this);
+            _moddingHandler = new ModdingHandler();
 
             base.Initialize();
         }
@@ -28,6 +32,7 @@ namespace MonoGameAndLua
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            _imGuiRenderer.RebuildFontAtlas();
         }
 
         protected override void Update(GameTime gameTime)
@@ -45,6 +50,9 @@ namespace MonoGameAndLua
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _imGuiRenderer.BeforeLayout(gameTime);
+            _moddingHandler.ExecuteScript("testImGui.lua");
+            _imGuiRenderer.AfterLayout();
 
             base.Draw(gameTime);
         }
