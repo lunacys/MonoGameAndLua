@@ -22,7 +22,7 @@ namespace MonoGameAndLua
         {
             // TODO: Add your initialization logic here
             _imGuiRenderer = new ImGuiRenderer(this);
-            _moddingHandler = new ModdingHandler("Lua/testImGui.lua");
+            
 
             base.Initialize();
         }
@@ -30,9 +30,13 @@ namespace MonoGameAndLua
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _imGuiRenderer.RebuildFontAtlas();
+            ImageLoader.GraphicsDevice = GraphicsDevice;
+            ImGuiRendererTexture.ImGuiRenderer = _imGuiRenderer;
+            _moddingHandler = new ModdingHandler("Lua/testImGui.lua");
 
             // TODO: use this.Content to load your game content here
-            _imGuiRenderer.RebuildFontAtlas();
+            
 
             _moddingHandler.ExecuteScript();
         }

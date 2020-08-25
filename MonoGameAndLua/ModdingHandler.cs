@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using ImGuiNET;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MoonSharp.Interpreter;
 
@@ -19,7 +21,9 @@ namespace MonoGameAndLua
             ScriptFilePath = scriptFilePath;
 
             UserData.RegisterAssembly(Assembly.GetCallingAssembly());
-            // UserData.RegisterType(typeof(LuaImGuiWrapper), InteropAccessMode.Default, "ImGui");
+            UserData.RegisterType(typeof(LuaImGuiWrapper), InteropAccessMode.Default, "ImGui");
+            UserData.RegisterType(typeof(Texture2D), InteropAccessMode.Default, "Texture2D");
+            UserData.RegisterType<IntPtr>();
 
             // ImGui
             UserData.RegisterType<ImGuiInputTextFlags>();
@@ -42,6 +46,8 @@ namespace MonoGameAndLua
             UserData.RegisterType<Keys>();
             UserData.RegisterType<MouseButton>();
 
+            RegisterAllVectors();
+
             ExecuteScript();
 
             _fileWatcher = new FileSystemWatcher(Path.GetDirectoryName(ScriptFilePath));
@@ -61,7 +67,8 @@ namespace MonoGameAndLua
         public void ExecuteScript()
         {
             _workingScript = new Script(CoreModules.Preset_HardSandbox);
-
+            _workingScript.Globals["ImageLoader"] = typeof(ImageLoader);
+            _workingScript.Globals["ImGuiTexture"] = typeof(ImGuiRendererTexture);
             try
             {
                 var source = File.ReadAllText(ScriptFilePath);
@@ -75,6 +82,7 @@ namespace MonoGameAndLua
 
             _workingScript.Globals["Input"] = typeof(InputManager);
             _workingScript.Globals["ImGui"] = typeof(ImGuiWrapper);
+            
         }
 
         public void CallScript()
@@ -115,5 +123,70 @@ namespace MonoGameAndLua
             _workingScript.Globals["Keys"] = typeof(Keys);
         }
 
+        private void RegisterAllVectors()
+        {
+            // Vector 2
+            Script.GlobalOptions.CustomConverters.SetScriptToClrCustomConversion(DataType.Table, typeof(Vector2),
+                dynVal => {
+                    var table = dynVal.Table;
+                    var x = (float)(double)table[1];
+                    var y = (float)(double)table[2];
+                    return new Vector2(x, y);
+                }
+            );
+
+            Script.GlobalOptions.CustomConverters.SetClrToScriptCustomConversion<Vector2>(
+                (script, vector) => {
+                    var x = DynValue.NewNumber(vector.X);
+                    var y = DynValue.NewNumber(vector.Y);
+                    var dynVal = DynValue.NewTable(script, x, y);
+                    return dynVal;
+                }
+            );
+
+            // Vector3
+            Script.GlobalOptions.CustomConverters.SetScriptToClrCustomConversion(DataType.Table, typeof(Vector3),
+                dynVal => {
+                    var table = dynVal.Table;
+                    var x = (float)((double)table[1]);
+                    var y = (float)((double)table[2]);
+                    var z = (float)((double)table[3]);
+                    return new Vector3(x, y, z);
+                }
+            );
+
+            Script.GlobalOptions.CustomConverters.SetClrToScriptCustomConversion<Vector3>(
+                (script, vector) => {
+                    var x = DynValue.NewNumber(vector.X);
+                    var y = DynValue.NewNumber(vector.Y);
+                    var z = DynValue.NewNumber(vector.Z);
+                    var dynVal = DynValue.NewTable(script, x, y, z);
+                    return dynVal;
+                }
+            );
+
+            // Vector4
+            Script.GlobalOptions.CustomConverters.SetScriptToClrCustomConversion(DataType.Table, typeof(Vector4),
+                dynVal => {
+                    var table = dynVal.Table;
+                    var w = (float)((double)table[1]);
+                    var x = (float)((double)table[2]);
+                    var y = (float)((double)table[3]);
+                    var z = (float)((double)table[4]);
+                    return new Vector4(w, x, y, z);
+                }
+            );
+
+            Script.GlobalOptions.CustomConverters.SetClrToScriptCustomConversion<Vector4>(
+                (script, vector) => {
+                    var w = DynValue.NewNumber(vector.W);
+                    var x = DynValue.NewNumber(vector.X);
+                    var y = DynValue.NewNumber(vector.Y);
+                    var z = DynValue.NewNumber(vector.Z);
+                    var dynVal = DynValue.NewTable(script, w, x, y, z);
+                    return dynVal;
+                }
+            );
+        }
     }
 }

@@ -1,4 +1,7 @@
 local text = 'placeholder1';
+local myImage = ImageLoader:Load('test.png');
+local myImageBinding = ImGuiTexture:BindTexture(myImage);
+local imageSize = { myImage.Width, myImage.Height };
 
 print('hey12');
 
@@ -26,7 +29,14 @@ function Render()
     if ImGui:Button('woah #4') then
         print('you pressed woah #4!!!!!: '..newText)
     end
+    ImGui:SameLine()
+    if ImGui:Button('woah #5') then
+        print('you pressed woah #5!!!!!: '..newText)
+    end
     ImGui:Text('my text label!')
     ImGui:Text('my second text label!')
+
+    ImGui:Image(myImageBinding, imageSize)
+
     ImGui:End()
 end
