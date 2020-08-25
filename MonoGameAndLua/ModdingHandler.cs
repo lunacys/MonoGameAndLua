@@ -15,6 +15,7 @@ namespace MonoGameAndLua
         public string ScriptFilePath { get; set; }
 
         private FileSystemWatcher _fileWatcher;
+        private Closure _renderFunc;
 
         public ModdingHandler(string scriptFilePath)
         {
@@ -72,7 +73,8 @@ namespace MonoGameAndLua
             try
             {
                 var source = File.ReadAllText(ScriptFilePath);
-                _workingScript.DoString(source);
+                var result = _workingScript.DoString(source).Table;
+                _renderFunc = result["render"] as Closure;
             }
             catch (Exception e)
             {
@@ -91,6 +93,7 @@ namespace MonoGameAndLua
             try
             {
                 _workingScript.Call(_workingScript.Globals["Render"]);
+                _renderFunc.Call();
             }
             catch (Exception e)
             {

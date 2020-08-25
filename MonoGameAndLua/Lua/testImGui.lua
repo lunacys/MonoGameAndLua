@@ -2,6 +2,8 @@ local text = 'placeholder1';
 local myImage = ImageLoader:Load('test.png');
 local myImageBinding = ImGuiTexture:BindTexture(myImage);
 local imageSize = { myImage.Width, myImage.Height };
+local result = {}
+--setmetatable(result, result)
 
 print('hey12');
 
@@ -40,3 +42,15 @@ function Render()
 
     ImGui:End()
 end
+
+function result:test()
+    print('test')
+end
+
+function result:render()
+    ImGui:Begin('result:render')
+    ImGui:Button('dis is test render')
+    ImGui:End()
+end
+
+return result
