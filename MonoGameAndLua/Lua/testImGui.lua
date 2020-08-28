@@ -53,4 +53,22 @@ function result:render()
     ImGui:End()
 end
 
+local myMetaTable = {}
+myMetaTable._meta = {}
+function myMetaTable._meta:__tostring()
+    return 'WOAH!'
+end
+
+setmetatable(myMetaTable, myMetaTable)
+
+function myMetaTable:__call(woahText)
+    return self:sayWoah(woahText)
+end
+
+function myMetaTable:sayWoah(woahText)
+    print('WOAH with text: '..woahText)
+end
+
+local w = myMetaTable('Oh Hello There')
+
 return result

@@ -22,7 +22,6 @@ namespace MonoGameAndLua
             ScriptFilePath = scriptFilePath;
 
             UserData.RegisterAssembly(Assembly.GetCallingAssembly());
-            UserData.RegisterType(typeof(LuaImGuiWrapper), InteropAccessMode.Default, "ImGui");
             UserData.RegisterType(typeof(Texture2D), InteropAccessMode.Default, "Texture2D");
             UserData.RegisterType<IntPtr>();
 
